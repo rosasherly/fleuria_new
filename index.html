@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE-edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fleuria - Home</title>
+    <link rel="shortcut icon" href="image/icon.png" type="image/png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --clr-background: #1e1a1a;
+        --clr-sidebar-bg: #302c31;
+        --clr-text-primary: #e8d7d9;
+        --clr-text-secondary: #c7b6c8;
+        --clr-accent-primary: #b48e9c;
+        --clr-accent-secondary: #907a78;
+        --clr-button-bg: #9b5665;
+        --clr-button-hover: #b46e7b;
+        --clr-search-bg: #3a383a;
+        --clr-shape-mauve: #c49a9b;
+        --sidebar-width-min: 60px;
+        --sidebar-width-max: 240px;
+      }
+
+      * {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        transition: color 0.3s ease, background-color 0.3s ease;
+      }
+
+      body {
+        min-height: 100vh;
+        background: var(--clr-background);
+        color: var(--clr-text-primary);
+        overflow-x: hidden;
+        scroll-snap-type: y mandatory;
+        overflow-y: scroll;
+        scroll-behavior: smooth;
+      }
+
+      #preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--clr-background);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+      }
+
+      #preloader.hidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .loader {
+        width: 50px;
+        height: 50px;
+        border: 5px solid var(--clr-sidebar-bg);
+        border-top-color: var(--clr-accent-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      #scroll-progress {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 4px;
+        background: rgba(0, 0, 0, 0); 
+        z-index: 1001; 
+      }
+
+      #scroll-progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--clr-accent-primary);
+        transition: width 0.1s linear;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: var(--sidebar-width-min);
+        background: var(--clr-sidebar-bg);
+        padding: 10px 14px;
+        box-shadow: 5px 0 30px rgba(0, 0, 0, 0.2);
+        transition: width 0.4s ease;
+        z-index: 1000;
+      }
+
+      .sidebar.active {
+        width: var(--sidebar-width-max);
+      }
+
+      .sidebar .logo_content .logo {
+        display: flex;
+        color: var(--clr-accent-primary);
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .sidebar.active .logo_content .logo {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .logo .logo_name {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--clr-accent-primary);
+        margin-left: 10px;
+        white-space: nowrap;
+      }
+
+      .sidebar #btn {
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 20px;
+        color: var(--clr-accent-primary);
+        cursor: pointer;
+        line-height: 1;
+        transition: left 0.4s ease, transform 0.4s ease;
+      }
+
+      .sidebar.active #btn {
+        left: calc(var(--sidebar-width-max) - 22px);
+        transform: none;
+      }
+
+      .sidebar .scr {
+        margin-top: 20px;
+        position: relative;
+        width: 100%;
+        height: 40px;
+      }
+      .sidebar .scr input {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 20px;
+        padding-left: 40px;
+        background-color: var(--clr-search-bg);
+        color: var(--clr-text-primary);
+        transition: all 0.3s ease;
+      }
+      .sidebar .scr input::placeholder {
+        color: var(--clr-text-secondary);
+      }
+      .sidebar .scr .bx-search-alt-2 {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+        color: var(--clr-accent-primary);
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .sidebar .scr .bx-search-alt-2:hover {
+        color: var(--clr-search-bg);
+      }
+      .sidebar .scr .bx-search-alt-2:hover ~ input {
+        background: var(--clr-accent-secondary);
+        color: var(--clr-search-bg);
+      }
+
+      .sidebar ul {
+        margin-top: 20px;
+        padding-left: 0;
+      }
+      .sidebar ul li {
+        list-style: none;
+        margin-bottom: 10px;
+        position: relative;
+      }
+      .sidebar ul li a {
+        display: flex;
+        align-items: center;
+        color: var(--clr-text-secondary);
+        font-size: 14px;
+        border-radius: 12px;
+        padding: 10px;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+      }
+
+      .sidebar ul li a:hover,
+      .sidebar ul li.active-link a {
+        background-color: var(--clr-search-bg);
+        color: var(--clr-accent-primary);
+      }
+
+      .sidebar .link_name {
+        margin-left: 10px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .sidebar.active .link_name {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .sidebar ul li .tooltip {
+        position: absolute;
+        left: 60px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: var(--clr-sidebar-bg);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        color: var(--clr-text-primary);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        z-index: 100;
+      }
+
+      .sidebar ul li:hover .tooltip {
+        opacity: 1;
+      }
+      .sidebar.active ul li:hover .tooltip {
+        display: none;
+      }
+
+      .home_content {
+        position: relative;
+        margin-left: var(--sidebar-width-min);
+        transition: margin-left 0.4s ease;
+        padding: 20px;
+      }
+
+      .sidebar.active ~ .home_content {
+        margin-left: var(--sidebar-width-max);
+      }
+
+      .home-section,
+      .bestseller-section {
+        padding: 60px;
+        background: var(--clr-sidebar-bg);
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        color: var(--clr-text-primary);
+        max-width: 1200px;
+        margin: 20px auto;
+        min-height: 80vh;
+        scroll-snap-align: start;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 1s ease-out, transform 1s ease-out; 
+      }
+
+      .home-section.loaded,
+      .bestseller-section.loaded {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .home-text h1 {
+        font-size: 4rem;
+        color: var(--clr-accent-primary);
+        margin-bottom: 20px;
+        font-weight: 700;
+        text-shadow: 0 0 10px rgba(180, 142, 156, 0.3);
+      }
+
+      .home-section {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-around;
+        gap: 50px;
+      }
+
+      .home-text {
+        flex: 1 1 350px;
+        max-width: 500px;
+      }
+
+      .home-text p {
+        font-size: 1rem;
+        line-height: 1.8;
+        margin-bottom: 30px;
+        color: var(--clr-text-secondary);
+      }
+
+      .button-group {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .action-button {
+        padding: 12px 28px;
+        color: var(--clr-text-primary);
+        border: none;
+        border-radius: 30px;
+        font-family: "Poppins", sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+      }
+
+      .explore-flowers {
+        background-color: var(--clr-accent-primary);
+      }
+
+      .explore-flowers:hover {
+        background-color: #d19ba1;
+        transform: translateY(-2px);
+      }
+
+      .about-us {
+        background-color: transparent;
+        border: 2px solid var(--clr-accent-primary);
+        color: var(--clr-accent-primary);
+      }
+
+      .about-us:hover {
+        background-color: var(--clr-accent-primary);
+        color: var(--clr-text-primary);
+        transform: translateY(-2px);
+      }
+
+      .home-image {
+        flex: 0 1 250px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .home-image img {
+        max-width: 100%;
+        height: auto;
+        max-height: 350px;
+        object-fit: contain;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        transition: transform 0.5s ease;
+      }
+
+      .home-section:hover .home-image img {
+        transform: scale(1.03);
+      }
+
+      .bestseller-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 80px;
+      }
+
+      .bestseller-section h2 {
+        font-size: 2.5rem;
+        color: var(--clr-accent-primary);
+        margin-bottom: 40px;
+        font-weight: 700;
+        border-bottom: 3px solid var(--clr-accent-secondary);
+        padding-bottom: 5px;
+        text-shadow: 0 0 8px rgba(180, 142, 156, 0.3);
+      }
+
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+        width: 100%;
+        max-width: 1000px;
+      }
+
+      .product-card {
+        background: var(--clr-search-bg);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        padding-bottom: 60px;
+      }
+
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+      }
+
+      .product-card img {
+        width: 100%;
+        height: 150px;
+        object-fit: contain;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        background-color: rgba(255, 255, 255, 0.05);
+        padding: 5px;
+      }
+
+      .product-card h4 {
+        font-size: 1.1rem;
+        color: var(--clr-text-primary);
+        margin-bottom: 5px;
+        font-weight: 600;
+      }
+
+      .product-card p {
+        font-size: 0.9rem;
+        color: var(--clr-shape-mauve);
+        font-weight: 700;
+        margin-bottom: 15px;
+      }
+
+      .product-card .buy-btn {
+        background-color: var(--clr-accent-secondary);
+        color: var(--clr-text-primary);
+        padding: 8px 20px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+      }
+
+      .product-card .buy-btn:hover {
+        background-color: var(--clr-accent-primary);
+      }
+      
+      @media (max-width: 768px) {
+        .home_content {
+          margin-left: 0;
+          padding: 10px;
+        }
+        .sidebar {
+          width: 0;
+        }
+        .sidebar.active {
+          width: 180px;
+        }
+        .sidebar.active ~ .home_content {
+          margin-left: 180px;
+        }
+
+        .home-section,
+        .bestseller-section {
+          flex-direction: column;
+          text-align: center;
+          padding: 40px 20px;
+          min-height: 90vh;
+        }
+
+        .home-text h1 {
+          font-size: 3rem;
+        }
+        .bestseller-section h2 {
+          font-size: 2rem;
+        }
+
+        .product-grid {
+          grid-template-columns: 1fr;
+        }
+        .product-card img {
+          height: 200px;
+        }
+
+        .product-card .buy-btn {
+          position: static;
+          transform: none;
+          margin-top: 15px;
+          width: auto;
+        }
+        .product-card {
+          padding-bottom: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="preloader">
+      <div class="loader"></div>
+    </div>
+
+    <div id="scroll-progress">
+      <div id="scroll-progress-bar"></div>
+    </div>
+
+    <div class="sidebar">
+      <div class="logo_content">
+        <div class="logo">
+          <i class="bx bxs-spa"></i>
+          <div class="logo_name">Fleuria</div>
+        </div>
+        <i class="bx bx-menu" id="btn"></i>
+      </div>
+
+      <div class="scr">
+        <i class="bx bx-search-alt-2"></i>
+        <input type="text" placeholder="Search.." />
+      </div>
+
+      <ul class="nav">
+        <li class="active-link">
+          <a href="index.html">
+            <i class="bx bxs-home"></i>
+            <span class="link_name">Home</span>
+          </a>
+          <span class="tooltip">Home</span>
+        </li>
+        <li>
+          <a href="about.html">
+            <i class="bx bxs-info-circle"></i>
+            <span class="link_name">About</span>
+          </a>
+          <span class="tooltip">About</span>
+        </li>
+        <li>
+          <a href="flowers.html">
+            <i class="bx bxs-leaf"></i>
+            <span class="link_name">Flowers</span>
+          </a>
+          <span class="tooltip">Flowers</span>
+        </li>
+        <li>
+          <a href="order.html">
+            <i class="bx bxs-shopping-bags"></i>
+            <span class="link_name">Order</span>
+          </a>
+          <span class="tooltip">Order</span>
+        </li>
+        <li>
+          <a href="feedback.html">
+            <i class="bx bxs-message-alt-detail"></i>
+            <span class="link_name">Feedback</span>
+          </a>
+          <span class="tooltip">Feedback</span>
+        </li>
+        <li>
+          <a href="login.html">
+            <i class="bx bx-user"></i>
+            <span class="link_name">Login</span>
+          </a>
+          <span class="tooltip">Login</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="home_content">
+      <div class="home-section" id="home">
+        <div class="home-text">
+          <h1>FLEURIA</h1>
+          <p>
+            Fleuria is a floral-themed digital space that blends natural beauty
+            with dark, elegant design. With soft hues of purple and pink, it
+            offers a serene and artistic escape into the world of flowers.
+          </p>
+
+          <div class="button-group">
+            <a href="flowers.html" class="action-button explore-flowers"
+              >EXPLORE FLOWERS</a
+            >
+            <a href="about.html" class="action-button about-us">ABOUT US</a>
+          </div>
+        </div>
+
+        <div class="home-image">
+          <img src="image/fleuria.png" alt="Fleuria Flower" />
+        </div>
+      </div>
+
+      <div class="bestseller-section" id="bestsellers">
+        <h2>🌸 BEST SELLERS</h2>
+        <div class="product-grid">
+          <div class="product-card">
+            <img src="image/bunga 1.png" alt="Phalaenopsis Orchid" />
+            <h4>Phalaenopsis Orchid</h4>
+            <p>Rp 350.000</p>
+            <a href="order.html" class="buy-btn">Order Now</a>
+          </div>
+
+          <div class="product-card">
+            <img src="image/flowers (13).png" alt="Dark Cymbidium" />
+            <h4>Dark Cymbidium</h4>
+            <p>Rp 880.000</p>
+            <a href="order.html" class="buy-btn">Order Now</a>
+          </div>
+
+          <div class="product-card">
+            <img src="image/flowers (7).png" alt="Purple Phalaenopsis" />
+            <h4>Purple Phalaenopsis</h4>
+            <p>Rp 390.000</p>
+            <a href="order.html" class="buy-btn">Order Now</a>
+          </div>
+
+          <div class="product-card">
+            <img src="image/flowers (5).png" alt="Pink Ranunculus" />
+            <h4>Pink Ranunculus</h4>
+            <p>Rp 195.000</p>
+            <a href="order.html" class="buy-btn">Order Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let btn = document.querySelector("#btn");
+      let sidebar = document.querySelector(".sidebar");
+      let scrBtn = document.querySelector(".bx-search-alt-2");
+
+      btn.onclick = function () {
+        sidebar.classList.toggle("active");
+      };
+
+      scrBtn.onclick = function () {
+        sidebar.classList.toggle("active");
+      };
+
+      window.onload = function () {
+        const preloader = document.getElementById("preloader");
+        preloader.classList.add("hidden");
+
+        setTimeout(() => {
+          const sections = document.querySelectorAll(
+            ".home-section, .bestseller-section"
+          );
+          sections.forEach((section) => {
+            section.classList.add("loaded");
+          });
+        }, 500); 
+      };
+
+      window.onscroll = function () {
+        updateScrollIndicator();
+      };
+
+      function updateScrollIndicator() {
+        const winScroll =
+          document.body.scrollTop || document.documentElement.scrollTop;
+        const height =
+          document.documentElement.scrollHeight -
+          document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById("scroll-progress-bar").style.width =
+          scrolled + "%";
+      }
+    </script>
+  </body>
+</html>

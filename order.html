@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fleuria - Order</title>
+    <link rel="shortcut icon" href="image/icon.png" type="image/png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --clr-background: #1e1a1a;
+        --clr-sidebar-bg: #302c31;
+        --clr-text-primary: #e8d7d9;
+        --clr-text-secondary: #c7b6c8;
+        --clr-accent-primary: #b48e9c;
+        --clr-accent-secondary: #907a78;
+        --clr-button-bg: #9b5665;
+        --clr-button-hover: #b46e7b;
+        --clr-search-bg: #3a383a;
+        --clr-main-content-bg: #302c31;
+        --clr-shape-mauve: #c49a9b;
+        --clr-highlight: #c79ca0;
+        --clr-input-bg: #2c2929;
+        --sidebar-width-min: 60px;
+        --sidebar-width-max: 240px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        background: var(--clr-background);
+        color: var(--clr-text-primary);
+        overflow-x: hidden;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: var(--sidebar-width-min);
+        background: var(--clr-sidebar-bg);
+        padding: 10px 14px;
+        box-shadow: 5px 0 30px rgba(0, 0, 0, 0.2);
+        transition: width 0.4s ease;
+        z-index: 1000;
+      }
+
+      .sidebar.active {
+        width: var(--sidebar-width-max);
+      }
+
+      .sidebar .logo_content .logo {
+        display: flex;
+        color: var(--clr-accent-primary);
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .sidebar.active .logo_content .logo {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .logo .logo_name {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--clr-accent-primary);
+        margin-left: 10px;
+        white-space: nowrap;
+      }
+
+      .sidebar #btn {
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 20px;
+        color: var(--clr-accent-primary);
+        cursor: pointer;
+        line-height: 1;
+        transition: left 0.4s ease, transform 0.4s ease;
+      }
+
+      .sidebar.active #btn {
+        left: calc(var(--sidebar-width-max) - 22px);
+        transform: none;
+      }
+
+      .sidebar .scr {
+        margin-top: 20px;
+        position: relative;
+        width: 100%;
+        height: 40px;
+      }
+      .sidebar .scr input {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 20px;
+        padding-left: 40px;
+        background-color: var(--clr-search-bg);
+        color: var(--clr-text-primary);
+        transition: all 0.3s ease;
+      }
+      .sidebar .scr input::placeholder {
+        color: var(--clr-text-secondary);
+      }
+      .sidebar .scr .bx-search-alt-2 {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+        color: var(--clr-accent-primary);
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .sidebar .scr .bx-search-alt-2:hover {
+        color: var(--clr-search-bg);
+      }
+      .sidebar .scr .bx-search-alt-2:hover ~ input {
+        background: var(--clr-accent-secondary);
+        color: var(--clr-search-bg);
+      }
+
+      .sidebar ul {
+        margin-top: 20px;
+        padding-left: 0;
+      }
+      .sidebar ul li {
+        list-style: none;
+        margin-bottom: 10px;
+        position: relative;
+      }
+      .sidebar ul li a {
+        display: flex;
+        align-items: center;
+        color: var(--clr-text-secondary);
+        font-size: 14px;
+        border-radius: 12px;
+        padding: 10px;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+      }
+
+      .sidebar ul li a:hover,
+      .sidebar ul li.active-link a {
+        background-color: var(--clr-search-bg);
+        color: var(--clr-accent-primary);
+      }
+
+      .sidebar .link_name {
+        margin-left: 10px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .sidebar.active .link_name {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .sidebar ul li .tooltip {
+        position: absolute;
+        left: 60px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: var(--clr-sidebar-bg);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        color: var(--clr-text-primary);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        z-index: 100;
+      }
+
+      .sidebar ul li:hover .tooltip {
+        opacity: 1;
+      }
+      .sidebar.active ul li:hover .tooltip {
+        display: none;
+      }
+
+      .order_content {
+        margin-left: var(--sidebar-width-min);
+        padding: 40px 20px;
+        transition: margin-left 0.4s ease;
+      }
+
+      .sidebar.active ~ .order_content {
+        margin-left: var(--sidebar-width-max);
+      }
+
+      .order-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: var(--clr-main-content-bg);
+        padding: 0;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        display: flex;
+        min-height: 600px;
+        overflow: hidden;
+      }
+
+      .form-section {
+        flex: 2;
+        padding: 40px;
+      }
+
+      .summary-section {
+        flex: 1;
+        background: var(--clr-search-bg);
+        padding: 40px 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .form-section h2 {
+        color: var(--clr-accent-primary);
+        margin-bottom: 25px;
+        font-size: 1.8rem;
+        font-weight: 700;
+        border-bottom: 2px solid var(--clr-search-bg);
+        padding-bottom: 10px;
+      }
+
+      .summary-section h3 {
+        color: var(--clr-text-primary);
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+      
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--clr-text-secondary);
+        font-weight: 400;
+        font-size: 0.95rem;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--clr-input-bg);
+        border-radius: 8px;
+        background-color: var(--clr-input-bg);
+        color: var(--clr-text-primary);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: var(--clr-accent-primary);
+        box-shadow: 0 0 0 1px var(--clr-accent-primary);
+      }
+
+      .form-group input:invalid:not(:focus):not(:placeholder-shown),
+      .form-group select:invalid:not(:focus) {
+        border-color: #ff4d4d; /* Merah untuk error */
+        box-shadow: 0 0 0 1px #ff4d4d;
+      }
+
+      .product-image {
+        width: 150px;
+        height: 150px;
+        background-color: var(--clr-main-content-bg);
+        border-radius: 50%;
+        overflow: hidden;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        flex-shrink: 0;
+      }
+
+      .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+
+      .product-image img:hover {
+        transform: scale(1.05);
+      }
+
+      .order-summary-details {
+        width: 100%;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--clr-main-content-bg);
+        margin-bottom: 20px;
+      }
+
+      .order-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+        color: var(--clr-text-secondary);
+      }
+
+      .order-total {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--clr-highlight);
+        margin-top: 15px;
+      }
+
+      .submit-btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 30px;
+        background-color: var(--clr-accent-primary);
+        color: var(--clr-text-primary);
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-transform: uppercase;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      .submit-btn:hover {
+        background-color: #d19ba1;
+        transform: translateY(-2px);
+      }
+      
+      @media (max-width: 900px) {
+        .order-container {
+          flex-direction: column;
+          min-height: auto;
+        }
+        .form-section {
+          padding: 30px;
+        }
+        .summary-section {
+          padding: 30px;
+          order: -1;
+          border-bottom: 1px solid var(--clr-main-content-bg);
+        }
+        .product-image {
+          width: 120px;
+          height: 120px;
+          margin-bottom: 15px;
+        }
+      }
+      @media (max-width: 768px) {
+        .order_content {
+          margin-left: 0;
+          padding: 20px 10px;
+        }
+        .sidebar {
+          width: 0;
+        }
+        .sidebar.active {
+          width: 180px;
+        }
+        .sidebar.active ~ .order_content {
+          margin-left: 180px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="logo_content">
+        <div class="logo">
+          <i class="bx bxs-spa"></i>
+          <div class="logo_name">Fleuria</div>
+        </div>
+        <i class="bx bx-menu" id="btn"></i>
+      </div>
+
+      <div class="scr">
+        <i class="bx bx-search-alt-2"></i>
+        <input type="text" placeholder="Search.." />
+      </div>
+
+      <ul class="nav">
+        <li>
+          <a href="index.html"
+            ><i class="bx bxs-home"></i><span class="link_name">Home</span></a
+          ><span class="tooltip">Home</span>
+        </li>
+        <li>
+          <a href="about.html"
+            ><i class="bx bxs-info-circle"></i
+            ><span class="link_name">About</span></a
+          ><span class="tooltip">About</span>
+        </li>
+        <li>
+          <a href="flowers.html"
+            ><i class="bx bxs-leaf"></i
+            ><span class="link_name">Flowers</span></a
+          ><span class="tooltip">Flowers</span>
+        </li>
+        <li class="active-link">
+          <a href="order.html"
+            ><i class="bx bxs-shopping-bags"></i
+            ><span class="link_name">Order</span></a
+          ><span class="tooltip">Order</span>
+        </li>
+        <li>
+          <a href="feedback.html"
+            ><i class="bx bxs-message-alt-detail"></i
+            ><span class="link_name">Feedback</span></a
+          ><span class="tooltip">Feedback</span>
+        </li>
+        <li>
+          <a href="login.html"
+            ><i class="bx bx-user"></i><span class="link_name">Login</span></a
+          ><span class="tooltip">Login</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="order_content">
+      <div class="order-container">
+        <div class="form-section">
+          <h2>Billing & Delivery Details</h2>
+          <form id="orderForm">
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="e.g., 0812345678"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="address">Delivery Address</label>
+              <textarea
+                id="address"
+                name="address"
+                rows="3"
+                placeholder="Full address for delivery"
+                required
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="message">Personal Message / Note</label>
+              <textarea
+                id="message"
+                name="message"
+                rows="2"
+                placeholder="e.g., Happy Birthday, Dear Sinta..."
+                maxlength="150"
+              ></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">PROCEED TO PAYMENT</button>
+          </form>
+        </div>
+
+        <div class="summary-section">
+          <h3>Order Summary</h3>
+
+          <div class="product-image">
+            <img id="productImage" src="image/icon.png" alt="Selected Flower" />
+          </div>
+
+          <div class="form-group" style="width: 100%">
+            <label for="flower">Select Flower Arrangement</label>
+            <select
+              id="flower"
+              name="flower"
+              required
+              onchange="updateSummary()"
+            >
+              <option
+                value="none"
+                data-price="0"
+                data-img="image/icon.png"
+                disabled
+                selected
+              >
+                -- Choose an Arrangement --
+              </option>
+              <option
+                value="Phalaenopsis"
+                data-price="350000"
+                data-img="image/bunga 1.png"
+              >
+                Phalaenopsis Orchid
+              </option>
+              <option
+                value="LightPhalaenopsis"
+                data-price="420000"
+                data-img="image/bunga 2.png"
+              >
+                Light Phalaenopsis
+              </option>
+              <option
+                value="RedFrangipani"
+                data-price="280000"
+                data-img="image/bunga 4.png"
+              >
+                Red Frangipani
+              </option>
+              <option
+                value="CymbidiumPink"
+                data-price="650000"
+                data-img="image/flowers (12).png"
+              >
+                Cymbidium Pink
+              </option>
+              <option
+                value="PurplePhalaenopsis"
+                data-price="390000"
+                data-img="image/flowers (7).png"
+              >
+                Purple Phalaenopsis
+              </option>
+              <option
+                value="DarkCymbidium"
+                data-price="880000"
+                data-img="image/flowers (13).png"
+              >
+                Dark Cymbidium
+              </option>
+              <option
+                value="PinkCamellia"
+                data-price="210000"
+                data-img="image/flowers (1).png"
+              >
+                Pink Camellia
+              </option>
+              <option
+                value="PinkRanunculus"
+                data-price="195000"
+                data-img="image/flowers (5).png"
+              >
+                Pink Ranunculus
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group" style="width: 100%; margin-bottom: 30px">
+            <label for="quantity">Quantity</label>
+            <input
+              type="number"
+              id="quantity"
+              name="quantity"
+              min="1"
+              value="1"
+              oninput="updateSummary()"
+            />
+          </div>
+
+          <div class="order-summary-details">
+            <div class="order-item">
+              <span>Price per Unit:</span><span id="pricePerUnit">Rp 0</span>
+            </div>
+            <div class="order-item">
+              <span>Subtotal:</span><span id="subtotal">Rp 0</span>
+            </div>
+            <div class="order-item">
+              <span>Shipping Fee:</span><span id="shippingFee">Rp 15.000</span>
+            </div>
+          </div>
+
+          <div class="order-total">
+            <span>TOTAL PAYMENT:</span>
+            <span id="totalPayment">Rp 15.000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let btn = document.querySelector("#btn");
+      let sidebar = document.querySelector(".sidebar");
+      let scrBtn = document.querySelector(".bx-search-alt-2");
+
+      btn.onclick = function () {
+        sidebar.classList.toggle("active");
+      };
+      scrBtn.onclick = function () {
+        sidebar.classList.toggle("active");
+      };
+
+      const SHIPPING_FEE = 15000;
+      let currentTotalPayment = SHIPPING_FEE; 
+
+      function formatRupiah(number) {
+        return new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+          minimumFractionDigits: 0,
+        }).format(number);
+      }
+
+      function updateSummary() {
+        const flowerSelect = document.getElementById("flower");
+        const quantityInput = document.getElementById("quantity");
+        const productImage = document.getElementById("productImage");
+
+        const selectedOption = flowerSelect.options[flowerSelect.selectedIndex];
+        const flowerName = selectedOption.textContent; 
+        const price = parseInt(selectedOption.getAttribute("data-price")) || 0;
+        const imgPath =
+          selectedOption.getAttribute("data-img") || "image/icon.png";
+        const quantity = parseInt(quantityInput.value) || 1;
+
+        productImage.src = imgPath;
+
+        const subtotalValue = price * quantity;
+        const totalPaymentValue = subtotalValue + SHIPPING_FEE;
+        currentTotalPayment = totalPaymentValue; 
+        
+        document.getElementById("pricePerUnit").textContent =
+          formatRupiah(price);
+        document.getElementById("subtotal").textContent =
+          formatRupiah(subtotalValue);
+        document.getElementById("shippingFee").textContent =
+          formatRupiah(SHIPPING_FEE);
+        document.getElementById("totalPayment").textContent =
+          formatRupiah(totalPaymentValue);
+      }
+
+      document
+        .getElementById("orderForm")
+        .addEventListener("submit", function (event) {
+          if (!this.checkValidity()) {
+            return;
+          }
+          
+          event.preventDefault();
+
+          const flowerSelect = document.getElementById("flower");
+          const selectedOption =
+            flowerSelect.options[flowerSelect.selectedIndex];
+
+          const orderData = {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            phone: document.getElementById("phone").value,
+            address: document.getElementById("address").value,
+            message: document.getElementById("message").value,
+
+            flowerName: selectedOption.textContent, 
+            flowerImage: selectedOption.getAttribute("data-img"),
+            pricePerUnit: parseInt(selectedOption.getAttribute("data-price")),
+            quantity: parseInt(document.getElementById("quantity").value),
+            subtotal:
+              (parseInt(selectedOption.getAttribute("data-price")) || 0) *
+              (parseInt(document.getElementById("quantity").value) || 1),
+            shippingFee: SHIPPING_FEE,
+            totalPayment: currentTotalPayment, 
+          };
+
+          localStorage.setItem("fleuriaOrderData", JSON.stringify(orderData));
+
+          window.location.href = "payment.html";
+        });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const defaultImage = document
+          .getElementById("flower")
+          .options[0].getAttribute("data-img");
+        document.getElementById("productImage").src = defaultImage;
+
+        updateSummary();
+      });
+    </script>
+  </body>
+</html>

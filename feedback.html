@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fleuria - Feedback</title>
+    <link rel="shortcut icon" href="image/icon.png" type="image/png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --clr-background: #1e1a1a;
+        --clr-sidebar-bg: #302c31;
+        --clr-text-primary: #e8d7d9;
+        --clr-text-secondary: #c7b6c8;
+        --clr-accent-primary: #b48e9c;
+        --clr-accent-secondary: #907a78;
+        --clr-button-bg: #9b5665;
+        --clr-button-hover: #b46e7b;
+        --clr-search-bg: #3a383a;
+        --clr-star-active: #ffd700;
+        --sidebar-width-min: 60px;
+        --sidebar-width-max: 240px;
+      }
+
+      * {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        background: var(--clr-background);
+        color: var(--clr-text-primary);
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: var(--sidebar-width-min);
+        background: var(--clr-sidebar-bg);
+        padding: 10px 14px;
+        box-shadow: 5px 0 30px rgba(0, 0, 0, 0.2);
+        transition: width 0.4s ease;
+        z-index: 1000;
+      }
+
+      .sidebar.active {
+        width: var(--sidebar-width-max);
+      }
+
+      .sidebar .logo_content .logo {
+        display: flex;
+        color: var(--clr-accent-primary);
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .sidebar.active .logo_content .logo {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .logo .logo_name {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--clr-accent-primary);
+        margin-left: 10px;
+        white-space: nowrap;
+      }
+
+      .sidebar #btn {
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 20px;
+        color: var(--clr-accent-primary);
+        cursor: pointer;
+        line-height: 1;
+        transition: left 0.4s ease, transform 0.4s ease;
+      }
+
+      .sidebar.active #btn {
+        left: calc(var(--sidebar-width-max) - 22px);
+        transform: none;
+      }
+
+      .sidebar .scr {
+        margin-top: 20px;
+        position: relative;
+        width: 100%;
+        height: 40px;
+      }
+      .sidebar .scr input {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 20px;
+        padding-left: 40px;
+        background-color: var(--clr-search-bg);
+        color: var(--clr-text-primary);
+        transition: all 0.3s ease;
+      }
+      .sidebar .scr input::placeholder {
+        color: var(--clr-text-secondary);
+      }
+      .sidebar .scr .bx-search-alt-2 {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+        color: var(--clr-accent-primary);
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .sidebar .scr .bx-search-alt-2:hover {
+        color: var(--clr-search-bg);
+      }
+      .sidebar .scr .bx-search-alt-2:hover ~ input {
+        background: var(--clr-accent-secondary);
+        color: var(--clr-search-bg);
+      }
+
+      .sidebar ul {
+        margin-top: 20px;
+        padding-left: 0;
+      }
+      .sidebar ul li {
+        list-style: none;
+        margin-bottom: 10px;
+        position: relative;
+      }
+      .sidebar ul li a {
+        display: flex;
+        align-items: center;
+        color: var(--clr-text-secondary);
+        font-size: 14px;
+        border-radius: 12px;
+        padding: 10px;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+      }
+
+      .sidebar ul li a:hover,
+      .sidebar ul li.active-link a {
+        background-color: var(--clr-search-bg);
+        color: var(--clr-accent-primary);
+      }
+
+      .sidebar .link_name {
+        margin-left: 10px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .sidebar.active .link_name {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .sidebar ul li .tooltip {
+        position: absolute;
+        left: 60px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: var(--clr-sidebar-bg);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        color: var(--clr-text-primary);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        z-index: 100;
+      }
+
+      .sidebar ul li:hover .tooltip {
+        opacity: 1;
+      }
+      .sidebar.active ul li:hover .tooltip {
+        display: none;
+      }
+
+      .home_content {
+        position: relative;
+        margin-left: var(--sidebar-width-min);
+        transition: margin-left 0.4s ease;
+        min-height: 100vh;
+        padding: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .sidebar.active ~ .home_content {
+        margin-left: var(--sidebar-width-max);
+      }
+
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+      }
+
+      .popup {
+        background-color: var(--clr-sidebar-bg);
+        border-radius: 16px;
+        padding: 24px;
+        width: 340px;
+        max-width: 90%;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        position: relative;
+        text-align: center;
+        color: var(--clr-text-primary);
+      }
+
+      .popup h2 {
+        margin: 0 0 12px;
+        font-size: 20px;
+        color: var(--clr-accent-primary);
+      }
+
+      .popup p {
+        font-size: 14px;
+        color: var(--clr-text-secondary);
+        margin-bottom: 20px;
+      }
+
+      .stars {
+        margin-bottom: 16px;
+      }
+
+      .star {
+        font-size: 28px;
+        color: var(--clr-text-secondary);
+        cursor: pointer;
+        transition: color 0.2s;
+        margin: 0 2px;
+        display: inline-block;
+      }
+
+      .star.active {
+        color: var(--clr-star-active);
+      }
+
+      textarea {
+        width: 100%;
+        height: 80px;
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 8px;
+        border: 1px solid var(--clr-accent-secondary);
+        background-color: var(--clr-search-bg);
+        color: var(--clr-text-primary);
+        resize: none;
+        margin-bottom: 16px;
+        transition: border-color 0.3s;
+      }
+
+      textarea:focus {
+        outline: none;
+        border-color: var(--clr-accent-primary);
+      }
+
+      .submit-btn {
+        background-color: var(--clr-button-bg);
+        color: white;
+        border: none;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 15px;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s;
+        font-weight: 600;
+      }
+
+      .submit-btn:hover {
+        background-color: var(--clr-button-hover);
+      }
+
+      @media (max-width: 768px) {
+        .home_content {
+          margin-left: 0;
+          padding: 20px;
+        }
+
+        .sidebar.active ~ .home_content {
+          margin-left: var(--sidebar-width-max);
+        }
+
+        .popup {
+          padding: 20px;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .sidebar.active ~ .home_content {
+          margin-left: 0;
+        }
+      }
+
+      @media (max-width: 400px) {
+        .home_content {
+          padding: 15px;
+        }
+        .popup {
+          padding: 15px;
+        }
+        .star {
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="logo_content">
+        <div class="logo">
+          <i class="bx bxs-spa"></i>
+          <div class="logo_name">
+            <a href="index.html" style="color: inherit; text-decoration: none"
+              >Fleuria</a
+            >
+          </div>
+        </div>
+        <i class="bx bx-menu" id="btn" aria-label="Toggle Sidebar Menu"></i>
+      </div>
+
+      <div class="scr">
+        <i class="bx bx-search-alt-2"></i>
+        <input type="text" placeholder="Search.." />
+      </div>
+
+      <ul class="nav">
+        <li>
+          <a href="index.html">
+            <i class="bx bxs-home"></i>
+            <span class="link_name">Home</span>
+          </a>
+          <span class="tooltip">Home</span>
+        </li>
+        <li>
+          <a href="about.html">
+            <i class="bx bxs-info-circle"></i>
+            <span class="link_name">About</span>
+          </a>
+          <span class="tooltip">About</span>
+        </li>
+        <li>
+          <a href="flowers.html">
+            <i class="bx bxs-leaf"></i>
+            <span class="link_name">Flowers</span>
+          </a>
+          <span class="tooltip">Flowers</span>
+        </li>
+        <li>
+          <a href="order.html">
+            <i class="bx bxs-shopping-bags"></i>
+            <span class="link_name">Order</span>
+          </a>
+          <span class="tooltip">Order</span>
+        </li>
+        <li>
+          <a href="feedback.html">
+            <i class="bx bxs-message-alt-detail"></i>
+            <span class="link_name">Feedback</span>
+          </a>
+          <span class="tooltip">Feedback</span>
+        </li>
+
+        <li>
+          <a href="login.html">
+            <i class="bx bx-user"></i>
+            <span class="link_name">Login</span>
+          </a>
+          <span class="tooltip">Login</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="home_content">
+      <div class="overlay">
+        <div class="popup">
+          <h2>We Appreciate Your Feedback</h2>
+          <p>
+            We are always looking for ways to improve your experience.<br />
+            Please take a moment to rate us and tell us what you think.
+          </p>
+
+          <div class="stars">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+          </div>
+
+          <textarea
+            placeholder="What can we do to improve your experience?"
+          ></textarea>
+          <button class="submit-btn">Submit My Feedback</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let btn = document.querySelector("#btn");
+      let sidebar = document.querySelector(".sidebar");
+      let scrBtn = document.querySelector(".bx-search-alt-2");
+
+      btn.onclick = function () {
+        sidebar.classList.toggle("active");
+      };
+      scrBtn.onclick = function () {
+        sidebar.classList.toggle("active");
+      };
+
+      const stars = document.querySelectorAll(".star");
+      let rating = 0;
+
+      stars.forEach((star, index) => {
+        star.addEventListener("click", () => {
+          rating = index + 1;
+          stars.forEach((s, i) => {
+            s.classList.toggle("active", i < rating);
+          });
+        });
+      });
+
+      const submitBtn = document.querySelector(".submit-btn");
+      const textarea = document.querySelector("textarea");
+
+      submitBtn.addEventListener("click", () => {
+        const feedbackText = textarea.value.trim();
+        if (rating > 0 || feedbackText) {
+          console.log("Feedback submitted:");
+          console.log("Rating:", rating);
+          console.log("Text:", feedbackText || "No comment");
+          alert(
+            `Thank you for your feedback! Rating: ${rating}/5. Comment: ${
+              feedbackText || "None"
+            }`
+          );
+        } else {
+          alert("Please provide a rating or write your feedback.");
+        }
+      });
+    </script>
+  </body>
+</html>

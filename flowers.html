@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fleuria - Flowers</title>
+    <link rel="shortcut icon" href="image/icon.png" type="image/png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --clr-card-bg: #302c31;
+        --clr-rating-star: #ffc107;
+        --clr-background: #1e1a1a;
+        --clr-sidebar-bg: #302c31;
+        --clr-text-primary: #e8d7d9;
+        --clr-text-secondary: #c7b6c8;
+        --clr-accent-primary: #b48e9c;
+        --clr-accent-secondary: #907a78;
+        --clr-button-bg: #9b5665;
+        --clr-button-hover: #b46e7b;
+        --clr-search-bg: #3a383a;
+        --clr-shape-mauve: #c49a9b;
+        --sidebar-width-min: 60px;
+        --sidebar-width-max: 240px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        background: var(--clr-background);
+        color: var(--clr-text-primary);
+        overflow-x: hidden;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: var(--sidebar-width-min);
+        background: var(--clr-sidebar-bg);
+        padding: 10px 14px;
+        box-shadow: 5px 0 30px rgba(0, 0, 0, 0.2);
+        transition: width 0.4s ease;
+        z-index: 1000;
+      }
+
+      .sidebar.active {
+        width: var(--sidebar-width-max);
+      }
+
+      .sidebar .logo_content .logo {
+        display: flex;
+        color: var(--clr-accent-primary);
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .sidebar.active .logo_content .logo {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .logo .logo_name {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--clr-accent-primary);
+        margin-left: 10px;
+        white-space: nowrap;
+      }
+
+      .sidebar #btn {
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 20px;
+        color: var(--clr-accent-primary);
+        cursor: pointer;
+        line-height: 1;
+        transition: left 0.4s ease, transform 0.4s ease;
+      }
+
+      .sidebar.active #btn {
+        left: calc(var(--sidebar-width-max) - 22px);
+        transform: none;
+      }
+
+      .sidebar .scr {
+        margin-top: 20px;
+        position: relative;
+        width: 100%;
+        height: 40px;
+      }
+      .sidebar .scr input {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 20px;
+        padding-left: 40px;
+        background-color: var(--clr-search-bg);
+        color: var(--clr-text-primary);
+        transition: all 0.3s ease;
+      }
+      .sidebar .scr input::placeholder {
+        color: var(--clr-text-secondary);
+      }
+      .sidebar .scr .bx-search-alt-2 {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+        color: var(--clr-accent-primary);
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .sidebar .scr .bx-search-alt-2:hover {
+        color: var(--clr-search-bg);
+      }
+      .sidebar .scr .bx-search-alt-2:hover ~ input {
+        background: var(--clr-accent-secondary);
+        color: var(--clr-search-bg);
+      }
+
+      .sidebar ul {
+        margin-top: 20px;
+        padding-left: 0;
+      }
+      .sidebar ul li {
+        list-style: none;
+        margin-bottom: 10px;
+        position: relative;
+      }
+      .sidebar ul li a {
+        display: flex;
+        align-items: center;
+        color: var(--clr-text-secondary);
+        font-size: 14px;
+        border-radius: 12px;
+        padding: 10px;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+      }
+
+      .sidebar ul li a:hover,
+      .sidebar ul li.active-link a {
+        background-color: var(--clr-search-bg);
+        color: var(--clr-accent-primary);
+      }
+
+      .sidebar .link_name {
+        margin-left: 10px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .sidebar.active .link_name {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .sidebar ul li .tooltip {
+        position: absolute;
+        left: 60px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: var(--clr-sidebar-bg);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        color: var(--clr-text-primary);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        z-index: 100;
+      }
+
+      .sidebar ul li:hover .tooltip {
+        opacity: 1;
+      }
+      .sidebar.active ul li:hover .tooltip {
+        display: none;
+      }
+
+      .home_content {
+        margin-left: var(--sidebar-width-min);
+        padding: 30px 20px;
+        transition: margin-left 0.4s ease;
+        position: relative;
+        z-index: 1;
+      }
+
+      .sidebar.active ~ .home_content {
+        margin-left: var(--sidebar-width-max);
+      }
+
+      .main-cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+        padding: 10px 0;
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .card {
+        background: var(--clr-card-bg);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 450px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease,
+          background 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        border: 2px solid rgba(170, 111, 115, 0.4);
+        background: rgba(63, 53, 67, 0.809);
+      }
+
+      .card img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        box-shadow: 0 0 0 4px var(--clr-accent-primary),
+          0 4px 10px rgba(0, 0, 0, 0.5);
+        transition: transform 0.4s ease;
+      }
+
+      .card:hover img {
+        transform: scale(1.05);
+      }
+
+      .info-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 1.5rem;
+      }
+
+      .card h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.3rem;
+        color: var(--clr-accent-primary);
+        text-align: center;
+        font-weight: 700;
+      }
+
+      .rating-stars {
+        color: var(--clr-rating-star);
+        font-size: 1rem;
+        margin-bottom: 10px;
+      }
+
+      .card p {
+        font-size: 0.85rem;
+        text-align: center;
+        color: var(--clr-text-secondary);
+        margin-bottom: 15px;
+        padding: 0 5px;
+      }
+
+      .price-stock {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 0 10px;
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      .price {
+        font-size: 1.3rem;
+        color: var(--clr-text-primary);
+      }
+
+      .stock-status {
+        font-size: 0.8rem;
+        color: #4caf50;
+      }
+
+      .out-of-stock {
+        color: #f44336;
+      }
+
+      .buy-btn {
+        background-color: var(--clr-button-bg);
+        border: none;
+        width: 90%;
+        padding: 0.8rem 1.4rem;
+        border-radius: 30px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease,
+          box-shadow 0.3s ease;
+        text-transform: uppercase;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .buy-btn:hover {
+        background-color: var(--clr-button-hover);
+        transform: translateY(-2px);
+      }
+
+      .badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: var(--clr-search-bg);
+        color: var(--clr-text-primary);
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: background 0.3s ease, color 0.3s ease;
+        user-select: none;
+        z-index: 10;
+      }
+
+      .badge:hover {
+        background: var(--clr-accent-primary);
+        color: var(--clr-text-primary);
+      }
+      .badge.active {
+        background: #f44336;
+        color: white;
+        animation: pulse 0.5s ease;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .card.out-of-stock-card {
+        opacity: 0.6;
+        pointer-events: none;
+        box-shadow: none;
+        border: 2px solid var(--clr-text-secondary);
+      }
+
+      .card.out-of-stock-card:hover {
+        transform: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        border: 2px solid var(--clr-text-secondary);
+        background: var(--clr-card-bg);
+      }
+
+      .card.out-of-stock-card:hover img {
+        transform: none;
+      }
+
+      .card.out-of-stock-card .badge {
+        pointer-events: auto;
+        cursor: pointer;
+      }
+
+      @media (max-width: 768px) {
+        .home_content {
+          margin-left: 0;
+          padding: 20px 10px;
+        }
+        .sidebar {
+          width: 0;
+        }
+        .sidebar.active {
+          width: 180px;
+        }
+        .sidebar.active ~ .home_content {
+          margin-left: 180px;
+        }
+        .sidebar #btn {
+          left: initial;
+          right: 10px;
+        }
+        .main-cards-container {
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+        .card {
+          min-height: 400px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="logo_content">
+        <div class="logo">
+          <i class="bx bxs-spa"></i>
+          <div class="logo_name">Fleuria</div>
+        </div>
+        <i class="bx bx-menu" id="btn"></i>
+      </div>
+
+      <div class="scr">
+        <i class="bx bx-search-alt-2"></i>
+        <input type="text" placeholder="Search.." />
+      </div>
+
+      <ul class="nav">
+        <li>
+          <a href="index.html"
+            ><i class="bx bxs-home"></i><span class="link_name">Home</span></a
+          ><span class="tooltip">Home</span>
+        </li>
+        <li>
+          <a href="about.html"
+            ><i class="bx bxs-info-circle"></i
+            ><span class="link_name">About</span></a
+          ><span class="tooltip">About</span>
+        </li>
+        <li class="active-link">
+          <a href="flowers.html"
+            ><i class="bx bxs-leaf"></i
+            ><span class="link_name">Flowers</span></a
+          ><span class="tooltip">Flowers</span>
+        </li>
+        <li>
+          <a href="order.html"
+            ><i class="bx bxs-shopping-bags"></i
+            ><span class="link_name">Order</span></a
+          ><span class="tooltip">Order</span>
+        </li>
+        <li>
+          <a href="feedback.html"
+            ><i class="bx bxs-message-alt-detail"></i
+            ><span class="link_name">Feedback</span></a
+          ><span class="tooltip">Feedback</span>
+        </li>
+        <li>
+          <a href="login.html"
+            ><i class="bx bx-user"></i><span class="link_name">Login</span></a
+          ><span class="tooltip">Login</span>
+        </li>
+      </ul>
+    </div>
+    <div class="home_content">
+      <div class="main-cards-container">
+        <div class="card">
+          <div class="badge" onclick="toggleHeart(this)">❤</div>
+          <img
+            src="image/bunga 1.png"
+            alt="Phalaenopsis Orchid (Moth Orchid)"
+          />
+          <div class="info-section">
+            <h3>Phalaenopsis Orchid</h3>
+            <div class="rating-stars">★★★★★</div>
+            <p>
+              This beautiful arrangement of pink Phalaenopsis orchids features
+              tall, graceful stems with vibrant blooms and lush green foliage.
+              Planted in a rounded pink pot, it’s perfect for Mother's Day.
+            </p>
+          </div>
+          <div class="price-stock">
+            <span class="price">Rp 350.000</span>
+            <span class="stock-status">In Stock</span>
+          </div>
+          <button class="buy-btn" onclick="goToOrderPage(event)">
+            Buy Now
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="badge" onclick="toggleHeart(this)">❤</div>
+          <img
+            src="image/bunga 2.png"
+            alt="Phalaenopsis Orchid (Moth Orchid)"
+          />
+          <div class="info-section">
+            <h3>Light Phalaenopsis</h3>
+            <div class="rating-stars">★★★★☆</div>
+            <p>
+              A delicate display of light yellow and pink Phalaenopsis orchids
+              arranged in a tall, beige vase with decorative twigs and pearl
+              accents. Combines minimalism and luxury.
+            </p>
+          </div>
+          <div class="price-stock">
+            <span class="price">Rp 420.000</span>
+            <span class="stock-status">In Stock</span>
+          </div>
+          <button class="buy-btn" onclick="goToOrderPage(event)">
+            Buy Now
+          </button>
+        </div>
+
+        <div class="card out-of-stock-card">
+          <div class="badge" onclick="toggleHeart(this)">❤</div>
+          <img
+            src="image/bunga 3.png"
+            alt="Phalaenopsis Orchid (Moth Orchid)"
+          />
+          <div class="info-section">
+            <h3>Tropical Orchid</h3>
+            <div class="rating-stars">★★★★☆</div>
+            <p>
+              Featuring striking pink Phalaenopsis orchids complemented by
+              monstera and syngonium leaves. The intertwining of soft flowers
+              and rustic branches creates a modern tropical aesthetic.
+            </p>
+          </div>
+          <div class="price-stock">
+            <span class="price">Rp 510.000</span>
+            <span class="stock-status out-of-stock">Out of Stock</span>
+          </div>
+          <button class="buy-btn" onclick="goToOrderPage(event)" disabled>
+            Out of Stock
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="badge" onclick="toggleHeart(this)">❤</div>
+          <img src="image/bunga 4.png" alt="Red Frangipani (Plumeria rubra)" />
+          <div class="info-section">
+            <h3>Red Frangipani</h3>
+            <div class="rating-stars">★★★★★</div>
+            <p>
+              Red Frangipani, a vibrant variety of Plumeria, features
+              reddish-pink petals and a rich fragrance. A popular ornamental
+              flower symbolizing beauty and grace.
+            </p>
+          </div>
+          <div class="price-stock">
+            <span class="price">Rp 280.000</span>
+            <span class="stock-status">In Stock</span>
+          </div>
+          <button class="buy-btn" onclick="goToOrderPage(event)">
+            Buy Now
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="badge" onclick="toggleHeart(this)">❤</div>
+          <img src="image/flowers (12).png" alt="Cymbidium orchids" />
+          <div class="info-section">
+            <h3>Cymbidium Pink</h3>
+            <div class="rating-stars">★★★☆☆</div>
+            <p>
+              This elegant arrangement features vibrant pink Cymbidium orchids
+              in a cascading style within a stylish, light pink vase. Slender
+              twigs add height and an organic, artistic element.
+            </p>
+          </div>
+          <div class="price-stock">
+            <span class="price">Rp 650.000</span>
+            <span class="stock-status">In Stock</span>
+          </div>
+          <button class="buy-btn" onclick="goToOrderPage(event)">
+            Buy Now
+          </button>
+        </div>
+
+        <div class="card out-of-stock-card">
+          <div class="badge" onclick="toggleHeart(this)">❤</div>
+          <img
+            src="image/flowers (8).png"
+            alt="Phalaenopsis orchids (Dendrobium)"
+          />
+          <div class="info-section">
+            <h3>Dendrobium Mix</h3>
+            <div class="rating-stars">★★★★★</div>
+            <p>
+              Elegant white Phalaenopsis orchids alongside numerous smaller,
+              delicate pink and fuchsia-colored Dendrobium orchids, creating a
+              full and lively display.
+            </p>
+          </div>
+          <div class="price-stock">
+            <span class="price">Rp 780.000</span>
+            <span class="stock-status out-of-stock">Out of Stock</span>
+          </div>
+          <button class="buy-btn" onclick="goToOrderPage(event)" disabled>
+            Out of Stock
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="badge" onclick="toggleHeart(this)">❤</div>
+          <img
+            src="image/flowers (7).png"
+            alt="Phalaenopsis orchids (Moth Orchid)"
+          />
+          <div class="info-section">
+            <h3>Purple Phalaenopsis</h3>
+            <div class="rating-stars">★★★★☆</div>
+            <p>
+              Displaying lovely shades of purple and mauve. Elegantly arranged
+              in a low, wide, gray stone-like planter, complemented by green
+              moss.
+            </p>
+          </div>
+          <div class="price-stock">
+            <span class="price">Rp 390.000</span>
+            <span class="stock-status">In Stock</span>
+          </div>
+          <button class="buy-btn" onclick="goToOrderPage(event)">
+            Buy Now
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="badge" onclick="toggleHeart(this)">❤</div>
+          <img src="image/flowers (13).png" alt="Cymbidium orchids" />
+          <div class="info-section">
+            <h3>Dark Cymbidium</h3>
+            <div class="rating-stars">★★★★☆</div>
+            <p>
+              Opulent Cymbidium flowers clustered along a vertical stem,
+              creating a dramatic and elegant cascade. Arranged in a sleek,
+              dark-colored modern vase.
+            </p>
+          </div>
+          <div class="price-stock">
+            <span class="price">Rp 880.000</span>
+            <span class="stock-status">In Stock</span>
+          </div>
+          <button class="buy-btn" onclick="goToOrderPage(event)">
+            Buy Now
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="badge" onclick="toggleHeart(this)">❤</div>
+          <img src="image/flowers (1).png" alt="Camellia" />
+          <div class="info-section">
+            <h3>Pink Camellia</h3>
+            <div class="rating-stars">★★★★★</div>
+            <p>
+              Soft pink Camellia blossom showcases tightly layered petals. Its
+              glossy dark green leaves contrast beautifully, ideal for graceful
+              floral arrangements.
+            </p>
+          </div>
+          <div class="price-stock">
+            <span class="price">Rp 210.000</span>
+            <span class="stock-status">In Stock</span>
+          </div>
+          <button class="buy-btn" onclick="goToOrderPage(event)">
+            Buy Now
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="badge" onclick="toggleHeart(this)">❤</div>
+          <img src="image/flowers (6).png" alt="Camellia" />
+          <div class="info-section">
+            <h3>Yellow Camellia</h3>
+            <div class="rating-stars">★★★☆☆</div>
+            <p>
+              Soft yellow Camellia blossom showcases tightly layered petals.
+              Creates an elegant and refined appearance, known for its
+              longevity.
+            </p>
+          </div>
+          <div class="price-stock">
+            <span class="price">Rp 230.000</span>
+            <span class="stock-status">In Stock</span>
+          </div>
+          <button class="buy-btn" onclick="goToOrderPage(event)">
+            Buy Now
+          </button>
+        </div>
+
+        <div class="card out-of-stock-card">
+          <div class="badge" onclick="toggleHeart(this)">❤</div>
+          <img src="image/flowers (3).png" alt="Ranunculus" />
+          <div class="info-section">
+            <h3>Purple Ranunculus</h3>
+            <div class="rating-stars">★★★★☆</div>
+            <p>
+              Vivid purple Ranunculus displays layers of silky petals that swirl
+              together. Its luminous color adds a cheerful yet refined touch,
+              perfect for joyful celebrations.
+            </p>
+          </div>
+          <div class="price-stock">
+            <span class="price">Rp 195.000</span>
+            <span class="stock-status out-of-stock">Out of Stock</span>
+          </div>
+          <button class="buy-btn" onclick="goToOrderPage(event)" disabled>
+            Out of Stock
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="badge" onclick="toggleHeart(this)">❤</div>
+          <img src="image/flowers (5).png" alt="Ranunculus" />
+          <div class="info-section">
+            <h3>Pink Ranunculus</h3>
+            <div class="rating-stars">★★★★★</div>
+            <p>
+              Pink Ranunculus displays layers of silky petals. Known for its
+              rose-like shape, it adds a cheerful yet refined touch to
+              arrangements and bouquets.
+            </p>
+          </div>
+          <div class="price-stock">
+            <span class="price">Rp 195.000</span>
+            <span class="stock-status">In Stock</span>
+          </div>
+          <button class="buy-btn" onclick="goToOrderPage(event)">
+            Buy Now
+          </button>
+        </div>
+      </div>
+    </div>
+    <audio
+      id="click-sound"
+      src="https://www.soundjay.com/buttons/sounds/button-16.mp3"
+      preload="auto"
+    ></audio>
+
+    <script>
+      let btn = document.querySelector("#btn");
+      let sidebar = document.querySelector(".sidebar");
+      let scrBtn = document.querySelector(".bx-search-alt-2");
+
+      btn.onclick = function () {
+        sidebar.classList.toggle("active");
+      };
+
+      scrBtn.onclick = function () {
+        sidebar.classList.toggle("active");
+      };
+      
+      function toggleHeart(el) {
+        el.classList.toggle("active");
+      }
+
+      function goToOrderPage(event) {
+        if (!event.target.disabled) {
+          document.getElementById("click-sound").play();
+          setTimeout(() => {
+            window.location.href = "order.html";
+          }, 200);
+        }
+      }
+    </script>
+  </body>
+</html>

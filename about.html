@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fleuria - About (Aesthetic Theme)</title>
+    <link rel="shortcut icon" href="image/icon.png" type="image/png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --clr-background: #1e1a1a;
+        --clr-sidebar-bg: #302c31;
+        --clr-text-primary: #e8d7d9;
+        --clr-text-secondary: #c7b6c8;
+        --clr-accent-primary: #b48e9c; 
+        --clr-accent-secondary: #907a78;
+        --clr-button-bg: #9b5665;
+        --clr-button-hover: #b46e7b;
+        --clr-search-bg: #3a383a;
+        --clr-shape-mauve: #c49a9b;
+        --sidebar-width-min: 60px;
+        --sidebar-width-max: 240px;
+      }
+
+      * {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        transition: color 0.3s ease, background-color 0.3s ease,
+          box-shadow 0.3s ease, transform 0.5s ease;
+      }
+
+      body {
+        min-height: 100vh;
+        background: var(--clr-background);
+        color: var(--clr-text-primary);
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: var(--sidebar-width-min);
+        background: var(--clr-sidebar-bg);
+        padding: 10px 14px;
+        box-shadow: 5px 0 30px rgba(0, 0, 0, 0.2);
+        transition: width 0.4s ease;
+        z-index: 1000;
+      }
+
+      .sidebar.active {
+        width: var(--sidebar-width-max);
+      }
+      .sidebar .logo_content .logo {
+        display: flex;
+        color: var(--clr-accent-primary);
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+      .sidebar.active .logo_content .logo {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .logo .logo_name {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--clr-accent-primary);
+        margin-left: 10px;
+        white-space: nowrap;
+      }
+      .sidebar #btn {
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 20px;
+        color: var(--clr-accent-primary);
+        cursor: pointer;
+        line-height: 1;
+        transition: left 0.4s ease, transform 0.4s ease;
+      }
+      .sidebar.active #btn {
+        left: calc(var(--sidebar-width-max) - 22px);
+        transform: none;
+      }
+      .sidebar .scr {
+        margin-top: 20px;
+        position: relative;
+        width: 100%;
+        height: 40px;
+      }
+      .sidebar .scr input {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 20px;
+        padding-left: 40px;
+        background-color: var(--clr-search-bg);
+        color: var(--clr-text-primary);
+        transition: all 0.3s ease;
+      }
+      .sidebar .scr input::placeholder {
+        color: var(--clr-text-secondary);
+      }
+      .sidebar .scr .bx-search-alt-2 {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+        color: var(--clr-accent-primary);
+        font-size: 18px;
+        cursor: pointer;
+      }
+      .sidebar .scr .bx-search-alt-2:hover {
+        color: var(--clr-search-bg);
+      }
+      .sidebar .scr .bx-search-alt-2:hover ~ input {
+        background: var(--clr-accent-secondary);
+        color: var(--clr-search-bg);
+      }
+      .sidebar ul {
+        margin-top: 20px;
+        padding-left: 0;
+      }
+      .sidebar ul li {
+        list-style: none;
+        margin-bottom: 10px;
+        position: relative;
+      }
+      .sidebar ul li a {
+        display: flex;
+        align-items: center;
+        color: var(--clr-text-secondary);
+        font-size: 14px;
+        border-radius: 12px;
+        padding: 10px;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+      }
+      .sidebar ul li a:hover,
+      .sidebar ul li.active-link a {
+        background-color: var(--clr-search-bg);
+        color: var(--clr-accent-primary);
+      }
+      .sidebar .link_name {
+        margin-left: 10px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+      .sidebar.active .link_name {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .sidebar ul li .tooltip {
+        position: absolute;
+        left: 60px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: var(--clr-sidebar-bg);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        color: var(--clr-text-primary);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        z-index: 100;
+      }
+      .sidebar ul li:hover .tooltip {
+        opacity: 1;
+      }
+      .sidebar.active ul li:hover .tooltip {
+        display: none;
+      }
+
+      .home_content {
+        position: relative;
+        margin-left: var(--sidebar-width-min);
+        padding: 40px;
+        transition: margin-left 0.4s ease;
+      }
+      .sidebar.active ~ .home_content {
+        margin-left: var(--sidebar-width-max);
+      }
+
+      .about-section {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 50px;
+        padding: 80px 60px; 
+        background: var(--clr-sidebar-bg);
+        border-radius: 20px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+        color: var(--clr-text-primary);
+        max-width: 1200px;
+        margin: 0 auto;
+
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 1s ease-out, transform 1s ease-out;
+      }
+
+      .about-section.reveal {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .about-images {
+        position: relative;
+        flex: 1 1 300px;
+        max-width: 500px;
+        height: 450px;
+      }
+      .about-images img {
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        object-fit: cover;
+        transition: box-shadow 0.4s ease;
+      }
+
+      .about-images img:hover {
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8),
+          0 0 15px var(--clr-accent-primary);
+      }
+
+      .about-images .img1 {
+        position: absolute;
+        top: -30px;
+        left: -30px;
+        width: 180px;
+        height: 180px;
+        z-index: 2;
+      }
+      .about-images .img2 {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 300px;
+        height: 350px;
+        margin: 0;
+        z-index: 3;
+        transform: translateY(0);
+      }
+      .mauve-shape {
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        background: var(--clr-shape-mauve);
+        border-radius: 60% 50% 40% 30%;
+        top: 40px;
+        left: 20px;
+        z-index: 1;
+        opacity: 0.5; 
+        filter: blur(5px);
+      }
+
+      .about-text {
+        flex: 1 1 300px;
+        max-width: 500px;
+        text-align: left; 
+      }
+
+      .about-text h5 {
+        color: var(--clr-accent-secondary);
+        font-size: 16px;
+        margin-bottom: 5px; 
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+      .about-text h1 {
+        font-size: 42px; 
+        font-weight: 800; 
+        color: var(--clr-accent-primary);
+        margin-bottom: 25px;
+        text-shadow: 0 0 10px rgba(180, 142, 156, 0.4);
+      }
+      .about-text p {
+        font-size: 15px;
+        color: var(--clr-text-secondary);
+        margin-bottom: 16px;
+        max-width: 100%; 
+        line-height: 1.7;
+        text-align: left; 
+      }
+
+      .long-content {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: max-height 0.8s ease-in-out, opacity 0.6s ease 0.2s,
+          padding-top 0.4s ease;
+        padding-top: 0;
+        border-top: 0px solid rgba(180, 142, 156, 0.2);
+        margin-top: 0;
+        text-align: left; 
+      }
+
+      .long-content.expanded {
+        max-height: 500px;
+        opacity: 1;
+        padding-top: 20px; 
+        border-top: 1px solid var(--clr-accent-secondary);
+        margin-top: 16px;
+      }
+
+      .about-text button {
+        background: var(
+          --clr-accent-primary
+        ); 
+        border: none;
+        color: var(--clr-sidebar-bg);
+        padding: 12px 28px;
+        font-size: 14px;
+        font-weight: 700;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+        margin-top: 20px;
+        display: inline-block;
+      }
+
+      .about-text button:hover {
+        background: #d19ba1; 
+        box-shadow: 0 0 15px rgba(180, 142, 156, 0.7); 
+        transform: translateY(-2px);
+      }
+
+      @media (max-width: 900px) {
+        .about-section {
+          flex-direction: column;
+          padding: 50px 30px;
+          max-width: 90%;
+        }
+        .about-text {
+          text-align: center; 
+        }
+        .about-text p {
+          text-align: center;
+        }
+        .long-content {
+          text-align: center;
+        }
+        .about-images {
+          max-width: 100%;
+          height: 380px;
+          order: -1; 
+        }
+      }
+
+      @media (max-width: 600px) {
+        .home_content {
+          padding: 15px;
+        }
+        .sidebar.active ~ .home_content {
+          margin-left: 0;
+        }
+        .about-images {
+          height: 300px;
+        }
+        .about-images .img2 {
+          width: 220px;
+          height: 250px;
+        }
+        .about-text h1 {
+          font-size: 32px;
+        }
+        .about-text button {
+          padding: 10px 20px;
+          font-size: 13px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="logo_content">
+        <div class="logo">
+          <i class="bx bxs-spa"></i>
+          <div class="logo_name"><a href="fleuria.html">Fleuria</a></div>
+        </div>
+        <i class="bx bx-menu" id="btn" aria-label="Toggle Sidebar Menu"></i>
+      </div>
+      <div class="scr">
+        <i class="bx bx-search-alt-2"></i>
+        <input type="text" placeholder="Search.." />
+      </div>
+      <ul class="nav">
+        <li>
+          <a href="index.html"
+            ><i class="bx bxs-home"></i><span class="link_name">Home</span></a
+          ><span class="tooltip">Home</span>
+        </li>
+        <li class="active-link">
+          <a href="about.html"
+            ><i class="bx bxs-info-circle"></i
+            ><span class="link_name">About</span></a
+          ><span class="tooltip">About</span>
+        </li>
+        <li>
+          <a href="flowers.html"
+            ><i class="bx bxs-leaf"></i
+            ><span class="link_name">Flowers</span></a
+          ><span class="tooltip">Flowers</span>
+        </li>
+        <li>
+          <a href="order.html"
+            ><i class="bx bxs-shopping-bags"></i
+            ><span class="link_name">Order</span></a
+          ><span class="tooltip">Order</span>
+        </li>
+        <li>
+          <a href="feedback.html"
+            ><i class="bx bxs-message-alt-detail"></i
+            ><span class="link_name">Feedback</span></a
+          ><span class="tooltip">Feedback</span>
+        </li>
+        <li>
+          <a href="login.html"
+            ><i class="bx bx-user"></i><span class="link_name">Login</span></a
+          ><span class="tooltip">Login</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="home_content">
+      <div class="text">
+        <div class="about-section">
+          <div class="about-images">
+            <img
+              src="image/img1.jpg"
+              alt="Fleuria Flowers arrangement 1"
+              class="img1"
+            />
+            <img
+              src="image/img2.jpg"
+              alt="Fleuria Flowers arrangement 2"
+              class="img2"
+              id="parallaxImage"
+            />
+            <div class="mauve-shape"></div>
+          </div>
+
+          <div class="about-text">
+            <h5>ABOUT US</h5>
+            <h1>ABOUT FLEURIA</h1>
+            <p>
+              Fleuria whispers beauty through every orchid bloom. We are
+              florists who believe that every single flower holds a story.
+            </p>
+            <p>
+              Every arrangement is a delicate harmony between nature and art,
+              crafted to evoke elegance, emotion, and timeless charm.
+            </p>
+
+            <div class="long-content" id="fullStory">
+              <p>
+                Our journey began with a single vision: to elevate floristry
+                into an art form that speaks directly to the soul. We
+                meticulously select the finest blooms, paying homage to the
+                natural, subtle beauty of the <q>Muted Rose Aesthetic</q> and the
+                deep, comforting tones of the <q>Dark Earth Palette</q>.
+              </p>
+              <p>
+                Beyond our signature orchid arrangements, we specialize in
+                bespoke designs for weddings, corporate events, and personal
+                gifts. We believe that true luxury lies in thoughtful detail,
+                from the selection of the ribbons to the final presentation.
+                <q>Fleuria is not just about flowers; it's about delivering an
+                experience.</q>
+              </p>
+              <p>
+                Come visit our boutique to explore the textures, colors, and
+                fragrances that define the Fleuria experience. We look forward
+                to crafting a piece of living art for you.
+              </p>
+            </div>
+
+            <button id="toggleButton">READ MORE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let btn = document.querySelector("#btn");
+      let sidebar = document.querySelector(".sidebar");
+      let scrBtn = document.querySelector(".bx-search-alt-2");
+
+      btn.onclick = function () {
+        sidebar.classList.toggle("active");
+      };
+
+      scrBtn.onclick = function () {
+        sidebar.classList.toggle("active");
+      };
+
+      let toggleButton = document.querySelector("#toggleButton");
+      let fullStory = document.querySelector("#fullStory");
+
+      toggleButton.onclick = function () {
+        fullStory.classList.toggle("expanded");
+
+        if (fullStory.classList.contains("expanded")) {
+          toggleButton.textContent = "READ LESS";
+        } else {
+          toggleButton.textContent = "READ MORE";
+        }
+      };
+
+      const aboutSection = document.querySelector(".about-section");
+      const parallaxImage = document.getElementById("parallaxImage");
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("reveal");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1 }
+      ); 
+
+      observer.observe(aboutSection);
+
+     
+      window.addEventListener("scroll", applyParallax);
+
+      function applyParallax() {
+        if (!parallaxImage) return;
+
+        const sectionTop = aboutSection.getBoundingClientRect().top;
+
+        if (
+          sectionTop < window.innerHeight &&
+          sectionTop > -aboutSection.offsetHeight
+        ) {
+          const scrollMultiplier = 0.1;
+          const translateY = window.scrollY * scrollMultiplier;
+
+          parallaxImage.style.transform = `translateY(${translateY}px)`;
+        } else {
+          parallaxImage.style.transform = `translateY(0)`;
+        }
+      }
+
+      applyParallax();
+    </script>
+  </body>
+</html>
